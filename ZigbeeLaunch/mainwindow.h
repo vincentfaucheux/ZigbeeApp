@@ -2,6 +2,9 @@
 
 #include <QMainWindow>
 #include <QComboBox>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QVBoxLayout>
 #include <dlfcn.h>
 #include "../ZigbeeSo/ZigbeeSo_interface.h"
 
@@ -13,13 +16,16 @@ public:
     ~MainWindow();
 
 private slots:
-    void onPluginChanged(int index);
+    //void onPluginChanged(int index);
 
 private:
-    QComboBox* combo;
+    QComboBox* comboModules = nullptr;
+    QComboBox* comboStates= nullptr;
     void* handle = nullptr;
     ZigbeeInterface* plugin = nullptr;
 
-    void loadPlugin(const QString& path);
-    void unloadPlugin();
+    //void commandZigbeeObsolete(const QString& path);
+    void commandZigbee(const QString& ModuleSelected, const QString& StateSelected);
+    void closeZigbeeSo();
+    void openZigbeeSo();
 };

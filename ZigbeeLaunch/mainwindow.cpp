@@ -1,31 +1,67 @@
 #include "mainwindow.h" 
-#include <QVBoxLayout>
 #include <QDebug>
 
 MainWindow::MainWindow() {
-    combo = new QComboBox;
-    combo->addItem("Addition", "../ZigbeeSo/ZigbeeSoSub/libZigbeeSo.so");
 
+    // Window
     auto* central = new QWidget;
-    auto* layout = new QVBoxLayout(central);
-    layout->addWidget(combo);
+
+    // GroupBox choix des modules
+    QGroupBox *groupBoxModules = new QGroupBox("Select module");
+    // ComboBox choix des modules
+    comboModules = new QComboBox();
+    comboModules->addItem("Addition", "../ZigbeeSo/ZigbeeSoSub/libZigbeeSo.so");
+    comboModules->addItem("Substraction", "../ZigbeeSo/ZigbeeSoSub/libZigbeeSo.so");
+    // Layout GroupBox choix des modules
+    auto* groupModulesLayout = new QVBoxLayout();
+    groupModulesLayout->addWidget(comboModules);
+    groupBoxModules->setLayout(groupModulesLayout);
+
+    // GroupBox choix des etats
+    QGroupBox *groupBoxStates= new QGroupBox("Select state");
+    // ComboBox choix des modules
+    comboStates = new QComboBox();
+    comboStates->addItem("On");
+    comboStates->addItem("Off");
+    // Layout GroupBox choix des modules
+    auto* groupStatesLayout = new QVBoxLayout();
+    groupStatesLayout->addWidget(comboStates);
+    groupBoxStates->setLayout(groupStatesLayout);
+
+    auto* groupsLayout = new QVBoxLayout();
+    groupsLayout->addWidget(groupBoxModules);
+    groupsLayout->addWidget(groupBoxStates);
+
+    QPushButton *button = new QPushButton("Action Zigbee");
+
+    auto* mainLayout = new QVBoxLayout();
+    mainLayout->addLayout(groupsLayout);
+    mainLayout->addWidget(button);
+    central->setLayout(mainLayout);
+
     setCentralWidget(central);
 
-    connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &MainWindow::onPluginChanged);
+    //connect(comboModules, QOverload<int>::of(&QComboBox::currentIndexChanged),
+    //        this, &MainWindow::onPluginChanged);
 
-    onPluginChanged(0);
-}
+    //onPluginChanged(0);
+
+    QObject::connect(button, &QPushButton::clicked, [&]() {
+        MainWindow::commandZigbee(comboModules->currentText(),
+                     comboStates->currentText());
+    });
+
+    openZigbeeSo();
+
+ }
 
 
 MainWindow::~MainWindow() {
-    unloadPlugin();
+    closeZigbeeSo();
 }
 
-void MainWindow::loadPlugin(const QString& path) {
-    unloadPlugin();
-
-    handle = dlopen(path.toStdString().c_str(), RTLD_LAZY);
+void MainWindow::openZigbeeSo(){
+   handle = dlopen( "../ZigbeeSo/ZigbeeSoSub/libZigbeeSo.so", RTLD_LAZY);
     if (!handle) {
         qDebug() << dlerror();
         return;
@@ -36,12 +72,9 @@ void MainWindow::loadPlugin(const QString& path) {
     );
 
     plugin = create();
-
-    qDebug() << "Plugin chargé:" << plugin->name();
-    qDebug() << "Compute:" << plugin->compute(4, 5);
 }
 
-void MainWindow::unloadPlugin() {
+void MainWindow::closeZigbeeSo() {
     if (plugin && handle) {
         auto destroy = reinterpret_cast<void(*)(ZigbeeInterface*)>(
             dlsym(handle, "destroy_zigbee")
@@ -53,6 +86,21 @@ void MainWindow::unloadPlugin() {
     handle = nullptr;
 }
 
-void MainWindow::onPluginChanged(int) {
-    loadPlugin(combo->currentData().toString());
+//void MainWindow::commandZigbeeObsolete(const QString& path) {
+//
+//    if( plugin != nullptr ) {
+//        qDebug() << "Plugin chargé:" << plugin->name();
+//        qDebug() << "Compute:" << plugin->compute(4, 5);
+//    }
+//}
+
+void MainWindow::commandZigbee(const QString& ModuleSelected, const QString& StateSelected) {
+
+    qDebug() << "Action zigbee";
+    qDebug() << "module: " << ModuleSelected;
+    qDebug() << "state: " << StateSelected;
 }
+
+//void MainWindow::onPluginChanged(int) {
+//    commandZigbeeObsolete(comboModules->currentData().toString());
+//}
