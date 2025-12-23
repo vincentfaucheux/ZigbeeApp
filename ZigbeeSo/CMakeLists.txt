@@ -1,3 +1,6 @@
+# mosqitto
+find_library(MOSQUITTO_LIB mosquitto REQUIRED)
+
 # Les headers des plugins sont accessibles à tous
 add_library(zigbee_interface INTERFACE)
 
@@ -10,6 +13,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(ZigbeeSo SHARED
     ZigbeeSo.cpp
+)
+
+target_link_libraries(ZigbeeSo PRIVATE
+    ${MOSQUITTO_LIB}
 )
 
 target_include_directories(ZigbeeSo

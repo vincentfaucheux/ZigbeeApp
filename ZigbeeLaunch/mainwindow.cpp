@@ -20,8 +20,8 @@ MainWindow::MainWindow() {
     QGroupBox *groupBoxStates= new QGroupBox("Select state");
     // ComboBox choix des modules
     comboStates = new QComboBox();
-    comboStates->addItem("On");
-    comboStates->addItem("Off");
+    comboStates->addItem("ON");
+    comboStates->addItem("OFF");
     // Layout GroupBox choix des modules
     auto* groupStatesLayout = new QVBoxLayout();
     groupStatesLayout->addWidget(comboStates);
@@ -98,6 +98,9 @@ void MainWindow::commandZigbee(const QString& ModuleSelected, const QString& Sta
     qDebug() << "Action zigbee";
     qDebug() << "module: " << ModuleSelected;
     qDebug() << "state: " << StateSelected;
+    std::string ModuleSelected_std = ModuleSelected.toStdString();
+    std::string StateSelected_std = StateSelected.toStdString();
+    plugin->Switch(ModuleSelected_std, StateSelected_std);
 }
 
 //void MainWindow::onPluginChanged(int) {
