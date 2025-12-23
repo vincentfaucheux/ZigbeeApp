@@ -10,8 +10,7 @@ MainWindow::MainWindow() {
     QGroupBox *groupBoxModules = new QGroupBox("Select module");
     // ComboBox choix des modules
     comboModules = new QComboBox();
-    comboModules->addItem("Addition", "../ZigbeeSo/ZigbeeSoSub/libZigbeeSo.so");
-    comboModules->addItem("Substraction", "../ZigbeeSo/ZigbeeSoSub/libZigbeeSo.so");
+    comboModules->addItem("premier_switch");
     // Layout GroupBox choix des modules
     auto* groupModulesLayout = new QVBoxLayout();
     groupModulesLayout->addWidget(comboModules);
@@ -61,7 +60,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::openZigbeeSo(){
-   handle = dlopen( "../ZigbeeSo/ZigbeeSoSub/libZigbeeSo.so", RTLD_LAZY);
+   handle = dlopen( "../ZigbeeSo/libZigbeeSo.so", RTLD_LAZY);
     if (!handle) {
         qDebug() << dlerror();
         return;

@@ -1,4 +1,4 @@
-#include "../ZigbeeSo_interface.h"
+#include "ZigbeeSo_interface.h"
 
 class ZigbeeA : public ZigbeeInterface {
 public:

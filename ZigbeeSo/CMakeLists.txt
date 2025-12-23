@@ -8,5 +8,14 @@ target_include_directories(zigbee_interface
 # Options communes aux plugins
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Ajouter les plugins ici
-add_subdirectory(ZigbeeSoSub)
+add_library(ZigbeeSo SHARED
+    ZigbeeSo.cpp
+)
+
+target_include_directories(ZigbeeSo
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..
+)
+
+set_target_properties(ZigbeeSo PROPERTIES
+    OUTPUT_NAME "ZigbeeSo"
+)

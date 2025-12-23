@@ -8,5 +8,5 @@ project(DynamicPluginsQt LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_subdirectory(ZigbeeSo/ZigbeeSoSub)
+add_subdirectory(ZigbeeSo)
 add_subdirectory(ZigbeeLaunch)
