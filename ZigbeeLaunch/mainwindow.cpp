@@ -3,54 +3,64 @@
 
 MainWindow::MainWindow() {
 
-    // Window
-    auto* central = new QWidget;
+    //try to open the shared library
+    bool bZigbeeSoOk = openZigbeeSo();
 
-    // GroupBox choix des modules
-    QGroupBox *groupBoxModules = new QGroupBox("Select module");
-    // ComboBox choix des modules
-    comboModules = new QComboBox();
-    comboModules->addItem("premier_switch");
-    // Layout GroupBox choix des modules
-    auto* groupModulesLayout = new QVBoxLayout();
-    groupModulesLayout->addWidget(comboModules);
-    groupBoxModules->setLayout(groupModulesLayout);
+    //if nok quit the program
+    if( bZigbeeSoOk == false) {
+            qDebug() << "Not able to open the shared library";
+    }
+    else {
 
-    // GroupBox choix des etats
-    QGroupBox *groupBoxStates= new QGroupBox("Select state");
-    // ComboBox choix des modules
-    comboStates = new QComboBox();
-    comboStates->addItem("ON");
-    comboStates->addItem("OFF");
-    // Layout GroupBox choix des modules
-    auto* groupStatesLayout = new QVBoxLayout();
-    groupStatesLayout->addWidget(comboStates);
-    groupBoxStates->setLayout(groupStatesLayout);
+        // create the Window
+        auto* central = new QWidget;
 
-    auto* groupsLayout = new QVBoxLayout();
-    groupsLayout->addWidget(groupBoxModules);
-    groupsLayout->addWidget(groupBoxStates);
+        // GroupBox choix des modules
+        QGroupBox *groupBoxModules = new QGroupBox("Select module");
+        // ComboBox choix des modules
+        comboModules = new QComboBox();
+        comboModules->addItem("premier_switch");
+        // Layout GroupBox choix des modules
+        auto* groupModulesLayout = new QVBoxLayout();
+        groupModulesLayout->addWidget(comboModules);
+        groupBoxModules->setLayout(groupModulesLayout);
 
-    QPushButton *button = new QPushButton("Action Zigbee");
+        // GroupBox choix des etats
+        QGroupBox *groupBoxStates= new QGroupBox("Select state");
+        // ComboBox choix des modules
+        comboStates = new QComboBox();
+        comboStates->addItem("CONFORT");
+        comboStates->addItem("ECO");
+        comboStates->addItem("HORS GEL");
+        comboStates->addItem("OFF");
+        // Layout GroupBox choix des modules
+        auto* groupStatesLayout = new QVBoxLayout();
+        groupStatesLayout->addWidget(comboStates);
+        groupBoxStates->setLayout(groupStatesLayout);
 
-    auto* mainLayout = new QVBoxLayout();
-    mainLayout->addLayout(groupsLayout);
-    mainLayout->addWidget(button);
-    central->setLayout(mainLayout);
+        auto* groupsLayout = new QVBoxLayout();
+        groupsLayout->addWidget(groupBoxModules);
+        groupsLayout->addWidget(groupBoxStates);
 
-    setCentralWidget(central);
+        QPushButton *button = new QPushButton("Action Zigbee");
 
-    //connect(comboModules, QOverload<int>::of(&QComboBox::currentIndexChanged),
-    //        this, &MainWindow::onPluginChanged);
+        auto* mainLayout = new QVBoxLayout();
+        mainLayout->addLayout(groupsLayout);
+        mainLayout->addWidget(button);
+        central->setLayout(mainLayout);
 
-    //onPluginChanged(0);
+        setCentralWidget(central);
 
-    QObject::connect(button, &QPushButton::clicked, [&]() {
-        MainWindow::commandZigbee(comboModules->currentText(),
-                     comboStates->currentText());
-    });
+        //connect(comboModules, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        //        this, &MainWindow::onPluginChanged);
 
-    openZigbeeSo();
+        //onPluginChanged(0);
+
+        QObject::connect(button, &QPushButton::clicked, [&]() {
+            MainWindow::commandZigbee(comboModules->currentText(),
+                        comboStates->currentText());
+        });
+    }
 
  }
 
@@ -59,18 +69,29 @@ MainWindow::~MainWindow() {
     closeZigbeeSo();
 }
 
-void MainWindow::openZigbeeSo(){
+bool MainWindow::openZigbeeSo(){
+    bool bRet = true;
    handle = dlopen( "../ZigbeeSo/libZigbeeSo.so", RTLD_LAZY);
     if (!handle) {
         qDebug() << dlerror();
-        return;
+        bRet = false;
     }
 
-    auto create = reinterpret_cast<ZigbeeInterface*(*)()>(
-        dlsym(handle, "create_zigbee")
-    );
+    if( bRet == true) {
+        auto create = reinterpret_cast<ZigbeeInterface*(*)()>(
+            dlsym(handle, "create_zigbee")
+        );
 
-    plugin = create();
+        if(!create) {
+            qDebug() << dlerror();
+            bRet = false;
+        }
+        else {
+            plugin = create();
+        }
+    }
+
+    return bRet;
 }
 
 void MainWindow::closeZigbeeSo() {

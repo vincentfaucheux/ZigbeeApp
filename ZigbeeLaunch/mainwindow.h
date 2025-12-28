@@ -27,5 +27,5 @@ private:
     //void commandZigbeeObsolete(const QString& path);
     void commandZigbee(const QString& ModuleSelected, const QString& StateSelected);
     void closeZigbeeSo();
-    void openZigbeeSo();
+    bool openZigbeeSo();
 };

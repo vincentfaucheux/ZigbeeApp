@@ -2,7 +2,6 @@
 #ifndef ZIGBEESO_INTERFACE_H
 #define ZIGBEESO_INTERFACE_H
 
-#include <mosquitto.h>
 #include <cstring>
 #include <iostream>
 

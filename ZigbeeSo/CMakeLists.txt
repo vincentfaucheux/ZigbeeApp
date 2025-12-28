@@ -12,7 +12,10 @@ target_include_directories(zigbee_interface
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(ZigbeeSo SHARED
+    ZigbeeSo_interface.cpp
+    ZigbeeSo_interface.h
     ZigbeeSo.cpp
+    ZigbeeSo.h
 )
 
 target_link_libraries(ZigbeeSo PRIVATE
