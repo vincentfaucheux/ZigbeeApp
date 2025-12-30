@@ -13,7 +13,7 @@ public:
 };
 
 extern "C" {
-    ZigbeeInterface* create_zigbee();
+    ZigbeeInterface* create_zigbee( std::string MqttPath);
     void destroy_zigbee(ZigbeeInterface*);
 }
 

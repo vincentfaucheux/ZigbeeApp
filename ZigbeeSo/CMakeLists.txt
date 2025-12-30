@@ -1,5 +1,6 @@
 # mosqitto
 find_library(MOSQUITTO_LIB mosquitto REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 # Les headers des plugins sont accessibles à tous
 add_library(zigbee_interface INTERFACE)
@@ -20,6 +21,10 @@ add_library(ZigbeeSo SHARED
 
 target_link_libraries(ZigbeeSo PRIVATE
     ${MOSQUITTO_LIB}
+)
+
+target_link_libraries(ZigbeeSo
+    PRIVATE ${yaml-cpp}
 )
 
 target_include_directories(ZigbeeSo

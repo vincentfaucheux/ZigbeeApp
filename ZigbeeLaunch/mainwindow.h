@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <dlfcn.h>
 #include "../ZigbeeSo/ZigbeeSo_interface.h"
+#include <string>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -27,5 +28,5 @@ private:
     //void commandZigbeeObsolete(const QString& path);
     void commandZigbee(const QString& ModuleSelected, const QString& StateSelected);
     void closeZigbeeSo();
-    bool openZigbeeSo();
+    bool openZigbeeSo( std::string ZigbeeLib, std::string Zigbee2MqttPath  );
 };
