@@ -30,7 +30,14 @@ MainWindow::MainWindow() {
                 QGroupBox *groupBoxModules = new QGroupBox("Select module");
                 // ComboBox choix des modules
                 comboModules = new QComboBox();
-                comboModules->addItem("premier_switch");
+                if( plugin != nullptr ) {
+                    //plugin valid, fill the combo box
+                    int iNum = plugin->GetDevicesNumber();
+                    for( int i=0; i<iNum; i++ ) {
+                        std::string deviceID = plugin->GetDeviceID(i);
+                        comboModules->addItem( QString::fromStdString( deviceID ) );
+                    }
+                }
                 // Layout GroupBox choix des modules
                 auto* groupModulesLayout = new QVBoxLayout();
                 groupModulesLayout->addWidget(comboModules);
@@ -140,13 +147,19 @@ void MainWindow::closeZigbeeSo() {
 //}
 
 void MainWindow::commandZigbee(const QString& ModuleSelected, const QString& StateSelected) {
-
-    qDebug() << "Action zigbee";
-    qDebug() << "module: " << ModuleSelected;
-    qDebug() << "state: " << StateSelected;
-    std::string ModuleSelected_std = ModuleSelected.toStdString();
-    std::string StateSelected_std = StateSelected.toStdString();
-    plugin->Switch(ModuleSelected_std, StateSelected_std);
+    //Check if plugin is valid
+    if( plugin == nullptr ) {
+        //plugin not valid
+        qDebug() << "Zigbee plugin not loaded";
+    }else {
+        //plugin valid, execute command
+        qDebug() << "Action zigbee";
+        qDebug() << "module: " << ModuleSelected;
+        qDebug() << "state: " << StateSelected;
+        std::string ModuleSelected_std = ModuleSelected.toStdString();
+        std::string StateSelected_std = StateSelected.toStdString();
+        plugin->Switch(ModuleSelected_std, StateSelected_std);
+    }
 }
 
 //void MainWindow::onPluginChanged(int) {
