@@ -2,11 +2,10 @@
 #define ZIGBEESO_H
 
 #include <mosquitto.h>
-#include <yaml-cpp/yaml.h>
 #include <string>
 #include <iostream>
 #include "ZigbeeSo_interface.h"
-#include <vector>
+#include "ZigbeeSo_config.h"
 
 class t_Zigbee : public ZigbeeInterface {
 public:
@@ -17,8 +16,7 @@ public:
 
 private:
     mosquitto *mosq = nullptr;
-    YAML::Node MqttConfig = YAML::Node(YAML::NodeType::Null);
-    std::vector<std::string> vModuleListe ;
+    tZigbeesoConfig* config_Ptr = nullptr;
 };
 
 #endif //ZIGBEESO_H

@@ -1,42 +1,14 @@
 #include "ZigbeeSo.h"
 
 t_Zigbee ::t_Zigbee(std::string MqttPath, bool* pbAllOk) {
-    // Load MQTT configuration
-    vModuleListe.clear();
-    try {
-        MqttConfig = YAML::LoadFile(MqttPath + "/configuration.yaml");
-        if( !MqttConfig["devices"] ) {
-            std::cerr << "No device in this configuration file" << std::endl;
-            *pbAllOk = false;
-        }
-        else {
-            YAML::Node devicesNode = MqttConfig["devices"];
-            if(( devicesNode) &&( devicesNode.IsMap())) {
-                for (const auto& device : devicesNode) {
-                    std::string device_id = device.first.as<std::string>();
-                    YAML::Node device_data = device.second;
-                    if ((device_data["friendly_name"]) &&
-                        (device_data["friendly_name"].IsScalar())) {
-                        std::string ModuleName =device_data["friendly_name"].as<std::string>();
-                        vModuleListe.push_back( ModuleName);
-                    }
-                    else {
-                    }
-                }
-            }
-        }
-    }
-    catch (const YAML::BadFile& e) {
-        std::cerr << "Error reading MQTT configuration file: " << e.what() << std::endl;
-        *pbAllOk = false;
-    }
-    catch (const YAML::ParserException& e) {
-        std::cerr << "Error parsing MQTT configuration file: " << e.what() << std::endl;
-        *pbAllOk = false;
-    }
+    // Init config module
+    config_Ptr = new tZigbeesoConfig();
+    if( config_Ptr != nullptr) {
+        // Load MQTT configuration
+         *pbAllOk = config_Ptr->LoadConfig(MqttPath);
 
     //Check if item in the vModuleListe
-    if(vModuleListe.empty()) {
+    if(config_Ptr->GetDevicesNumber() == 0) {
         std::cerr << "No module found in configuration" << std::endl;
         *pbAllOk = false;
     } else {
@@ -54,12 +26,23 @@ t_Zigbee ::t_Zigbee(std::string MqttPath, bool* pbAllOk) {
             }
         }
     }
+    } else {
+        std::cerr << "not able to open the config class" << std::endl;
+        *pbAllOk = false;
+    }
 }
 
 t_Zigbee ::~t_Zigbee() {
+    //delete mosquitto instance
     mosquitto_disconnect(mosq);
     mosquitto_destroy(mosq);
     mosquitto_lib_cleanup();
+
+    //delete config instance
+    if( config_Ptr != nullptr) {
+        delete config_Ptr;
+        config_Ptr = nullptr;
+    }
 }
 
 void t_Zigbee ::Switch(std::string module, 

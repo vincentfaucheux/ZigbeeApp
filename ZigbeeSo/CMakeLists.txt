@@ -17,6 +17,8 @@ add_library(ZigbeeSo SHARED
     ZigbeeSo_interface.h
     ZigbeeSo.cpp
     ZigbeeSo.h
+    ZigbeeSo_config.cpp
+    ZigbeeSo_config.h
 )
 
 target_link_libraries(ZigbeeSo PRIVATE
