@@ -12,6 +12,7 @@ public:
     ~tZigbeesoConfig();
     bool LoadConfig(std::string ConfigPath);
     int GetDevicesNumber();
+    std::string GetDeviceID(int index);
 
 private:
     std::vector<std::string> vModuleListe ;

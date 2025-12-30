@@ -9,8 +9,10 @@
 
 class t_Zigbee : public ZigbeeInterface {
 public:
-    t_Zigbee(std::string MqttPath, bool* pbAllOk);
+    t_Zigbee(std::string MqttPath, bool* bAllOk_Ptr);
     ~t_Zigbee();
+    int GetDevicesNumber() override;
+    std::string GetDeviceID(int index) override;
     void Switch(std::string module, 
             std::string state) override;
 

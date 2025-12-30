@@ -8,6 +8,8 @@
 class ZigbeeInterface {
 public:
     virtual ~ZigbeeInterface() = default;
+    virtual int GetDevicesNumber() = 0;
+    virtual std::string GetDeviceID(int index) = 0;
     virtual void Switch(std::string module, 
         std::string state) = 0;
 };

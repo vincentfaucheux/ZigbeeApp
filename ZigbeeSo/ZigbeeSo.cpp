@@ -1,16 +1,16 @@
 #include "ZigbeeSo.h"
 
-t_Zigbee ::t_Zigbee(std::string MqttPath, bool* pbAllOk) {
+t_Zigbee ::t_Zigbee(std::string MqttPath, bool* bAllOk_Ptr) {
     // Init config module
     config_Ptr = new tZigbeesoConfig();
     if( config_Ptr != nullptr) {
         // Load MQTT configuration
-         *pbAllOk = config_Ptr->LoadConfig(MqttPath);
+         *bAllOk_Ptr = config_Ptr->LoadConfig(MqttPath);
 
     //Check if item in the vModuleListe
     if(config_Ptr->GetDevicesNumber() == 0) {
         std::cerr << "No module found in configuration" << std::endl;
-        *pbAllOk = false;
+        *bAllOk_Ptr = false;
     } else {
         // Initialize Mosquitto
         mosquitto_lib_init();
@@ -18,17 +18,17 @@ t_Zigbee ::t_Zigbee(std::string MqttPath, bool* pbAllOk) {
         // if mosq is nullptr, handle the error
         if(!mosq) {
             std::cerr << "Failed to create Mosquitto instance" << std::endl;
-            *pbAllOk = false;
+            *bAllOk_Ptr = false;
         } else {
             if(mosquitto_connect(mosq, "localhost", 1883, 60) != MOSQ_ERR_SUCCESS) {
                 std::cerr << "Failed to connect to Mosquitto broker" << std::endl;
-                *pbAllOk = false;
+                *bAllOk_Ptr = false;
             }
         }
     }
     } else {
         std::cerr << "not able to open the config class" << std::endl;
-        *pbAllOk = false;
+        *bAllOk_Ptr = false;
     }
 }
 
@@ -42,6 +42,22 @@ t_Zigbee ::~t_Zigbee() {
     if( config_Ptr != nullptr) {
         delete config_Ptr;
         config_Ptr = nullptr;
+    }
+}
+
+int t_Zigbee ::GetDevicesNumber() {
+    if( config_Ptr != nullptr) {
+        return( config_Ptr->GetDevicesNumber());
+    } else {
+        return(0);
+    }
+}
+
+std::string t_Zigbee ::GetDeviceID(int index) {
+    if( config_Ptr != nullptr) {
+        return( config_Ptr->GetDeviceID(index));
+    } else {
+        return("");
     }
 }
 

@@ -50,3 +50,11 @@ bool tZigbeesoConfig::LoadConfig(std::string ConfigPath) {
 int tZigbeesoConfig::GetDevicesNumber() {
     return static_cast<int>(vModuleListe.size());
 }
+
+std::string tZigbeesoConfig::GetDeviceID(int index) {
+    if( (index >=0) && ( index < static_cast<int>(vModuleListe.size()))) {
+        return vModuleListe[index];
+    } else {
+        return "";
+    }
+}
