@@ -1,48 +1,21 @@
 #include "mainwindow.h" 
 #include <QDebug>
-#include <fstream>
-#include <yaml-cpp/yaml.h>
 
 MainWindow::MainWindow() {
-
-    //Check if the configuration file exists
-    std::ifstream ConfigFile("configuration.yaml");
-    if (!ConfigFile.good()) {
-        qDebug() << "Not able to open the configuration file";
-    } else {
-        //close the file
-        ConfigFile.close();
-
-        //read the yaml file to get the path of zigbee2mqtt
-        YAML::Node YamlConfig = YAML::Node(YAML::NodeType::Null);
-        std::string Zigbee2MqttPath = "";
-        std::string ZigbeeLib = "";
-        try {
-            YamlConfig = YAML::LoadFile("configuration.yaml");
-            if( YamlConfig["mqtt_config_path"] ) {
-                Zigbee2MqttPath = YamlConfig["mqtt_config_path"].as<std::string>();
-                qDebug() << "mqtt_config_path:" << QString::fromStdString(Zigbee2MqttPath);
-            } else {
-                qDebug() << "mqtt_config_path not found in configuration.yaml";
-            }
-            if( YamlConfig["zigbee_app_lib"] ) {
-                ZigbeeLib = YamlConfig["zigbee_app_lib"].as<std::string>();
-                qDebug() << "zigbee_app_lib:" << QString::fromStdString(ZigbeeLib);
-            } else {
-                qDebug() << "zigbee_app_lib not found in configuration.yaml";
-            }
-        } 
-        catch (const YAML::BadFile& e) {
-            qDebug() << "Error reading YAML file:" << e.what();
-        }
-        catch (const YAML::ParserException& e) {
-            qDebug() << "Error parsing YAML file:" << e.what();
-        }
-
+    //allocate config class
+    mainConfig_Ptr = new tMainConfig();
+    //if config class allocated
+    if( mainConfig_Ptr != nullptr ) {
+        //load the configuration file
+        bool bConfigOk = mainConfig_Ptr->LoadConfig();
         //if path exists, continue
-        if(( Zigbee2MqttPath != "" ) && ( ZigbeeLib != "" )) {
+        if(( mainConfig_Ptr->ConfigData_Ptr->Zigbee2MqttPath != "" ) && 
+            ( mainConfig_Ptr->ConfigData_Ptr->ZigbeeAppLib != "" )) {
             //try to open the shared library
-            bool bZigbeeSoOk = openZigbeeSo( ZigbeeLib, Zigbee2MqttPath);
+            bool bZigbeeSoOk = openZigbeeSo( 
+                mainConfig_Ptr->ConfigData_Ptr->ZigbeeAppLib, 
+                mainConfig_Ptr->ConfigData_Ptr->Zigbee2MqttPath
+            );
 
             //if nok quit the program
             if( bZigbeeSoOk == false) {
@@ -100,13 +73,21 @@ MainWindow::MainWindow() {
                 });
             }
         }
+    } else {
+        qDebug() << "Not able to allocate the config class";
     }
 
  }
 
 
 MainWindow::~MainWindow() {
+    //close the zigbee shared library
     closeZigbeeSo();
+
+    //delete the config class
+    if( mainConfig_Ptr != nullptr ) {
+        delete mainConfig_Ptr;
+    }
 }
 
 bool MainWindow::openZigbeeSo( std::string ZigbeeLib, std::string Zigbee2MqttPath  ){

@@ -5,6 +5,8 @@ add_executable(ZigbeeLaunch
     main.cpp
     mainwindow.cpp
     mainwindow.h
+    main_config.h
+    main_config.cpp
 )
 
 target_include_directories(ZigbeeLaunch

@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 #include "../ZigbeeSo/ZigbeeSo_interface.h"
 #include <string>
+#include "main_config.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -24,6 +25,7 @@ private:
     QComboBox* comboStates= nullptr;
     void* handle = nullptr;
     ZigbeeInterface* plugin = nullptr;
+    tMainConfig* mainConfig_Ptr = nullptr;
 
     //void commandZigbeeObsolete(const QString& path);
     void commandZigbee(const QString& ModuleSelected, const QString& StateSelected);
